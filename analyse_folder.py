@@ -79,7 +79,7 @@ for i in range(len(ls)):
         
         plt.imshow(img[j],cmap="gist_gray")
         plt.imshow(contour,cmap="inferno",alpha=.7)
-        plt.savefig(folder+"results"+os.sep+ls[i]+".png")
+        plt.savefig(folder+"results"+os.sep+ls[i]+"_ch"+str(j)+".png")
         plt.clf()
 
         
