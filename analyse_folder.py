@@ -57,6 +57,8 @@ for i in range(len(ls)):
     for j in range(len(img)): ## loop on channels
 
         contour,fill = make_contour_mask(img[j])
+        if (contour==None):
+            break
         migration_index = get_migration_index(contour)
 
         res_output.write("#### File: "+ls[i]+"\n")

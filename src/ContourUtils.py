@@ -19,7 +19,7 @@ def make_contour_mask(img):
     dilated = thresholded.copy()
     
     connected_contour_flag = False
-    
+    N_it = 0
     while not (connected_contour_flag):
         
         contour = np.bitwise_xor(binary_dilation(dilated), dilated)
@@ -41,6 +41,10 @@ def make_contour_mask(img):
             connected_contour_flag = True
         
         dilated = binary_dilation(dilated)
+        N_it +=1
+
+        if (N_it==50):
+            return None,None
 
     tentative_contour = lab==candidates[0]        
     fill = flood_fill(tentative_contour,(int(len(img)/2),int(len(img[0])/2)),1,connectivity=1)
