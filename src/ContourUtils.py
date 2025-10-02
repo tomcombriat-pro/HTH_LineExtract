@@ -65,6 +65,13 @@ def get_migration_index(contour):
     base_distance = np.sqrt((top - bottom)**2 + delta_y_squared)
     
     return np.sum(contour)/base_distance
+
+def get_contour_distances(contour):
+    top,bottom = get_contour_end_points(contour)
+    delta_y_squared = len(contour)**2
+    base_distance = np.sqrt((top - bottom)**2 + delta_y_squared)
+    
+    return base_distance,np.sum(contour)
                       
 
 
