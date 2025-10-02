@@ -1,0 +1,70 @@
+import numpy as np  # numerics
+import math as math  # math
+import os as os
+from skimage.filters import threshold_otsu, threshold_li,threshold_yen
+
+from skimage.morphology import binary_dilation, binary_erosion
+from skimage.measure import label, regionprops
+from skimage.segmentation import flood_fill
+
+
+
+
+
+
+def make_contour_mask(img):
+    """ Expects a MIP fluo img"""
+
+    thresholded = img>threshold_li(img)
+    dilated = thresholded.copy()
+    
+    connected_contour_flag = False
+    
+    while not (connected_contour_flag):
+        
+        contour = np.bitwise_xor(binary_dilation(dilated), dilated)
+
+        print("Labelling")
+        lab = label(contour)
+
+        max_size = 0
+        candidates = []
+        print("Finding the biggest contour")
+        for i in range(1,np.amax(lab)):
+            sub_contour = lab==i
+            
+            if (np.sum(sub_contour[0]) >0 and np.sum(sub_contour[len(sub_contour)-1] > 0)): #checking that it connects top and bottom
+                candidates.append(i)
+        print("Flood fill")
+
+        if (len(candidates) > 0):
+            connected_contour_flag = True
+        
+        dilated = binary_dilation(dilated)
+
+    tentative_contour = lab==candidates[0]        
+    fill = flood_fill(tentative_contour,(int(len(img)/2),int(len(img[0])/2)),1,connectivity=1)
+
+        
+
+    print("Cleaning")
+    contour_final = np.bitwise_xor(binary_dilation(fill),fill)
+    return contour_final,fill
+
+
+
+def get_contour_end_points(contour):
+    top = np.where(contour[0])[0][0]
+    bottom = np.where(contour[len(contour)-1])[0][0]
+    return top,bottom
+
+
+def get_migration_index(contour):
+    top,bottom = get_contour_end_points(contour)
+    delta_y_squared = len(contour)**2
+    base_distance = np.sqrt((top - bottom)**2 + delta_y_squared)
+    
+    return np.sum(contour)/base_distance
+                      
+
+
