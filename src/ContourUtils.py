@@ -44,7 +44,7 @@ def make_contour_mask(img):
         N_it +=1
 
         if (N_it==50):
-            return None,None
+            return np.zeros_like(img),np.zeros_like(img)
 
     tentative_contour = lab==candidates[0]        
     fill = flood_fill(tentative_contour,(int(len(img)/2),int(len(img[0])/2)),1,connectivity=1)
