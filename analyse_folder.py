@@ -66,7 +66,7 @@ for i in range(len(ls)):
         res_output.write("## Channel: "+str(j)+"\n")
         res_output.write("## Dimension: "+str(img.shape))
 
-        if (np.mean(img[:,0:int(len(img[0])/2)]) > (np.mean(img[:,int(len(img[0])/2)::]))):
+        if (np.mean(img[j][:,0:int(len(img[j][0])/2)]) > (np.mean(img[j][:,int(len(img[j][0])/2)::]))):
             res_output.write("## Cells on the left\n")
         else:
             res_output.write("## Cells on the right\n")
