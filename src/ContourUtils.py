@@ -1,3 +1,4 @@
+
 import numpy as np  # numerics
 import math as math  # math
 import os as os
@@ -33,8 +34,10 @@ def make_contour_mask(img):
         for i in range(1,np.amax(lab)):
             sub_contour = lab==i
             
-            if (np.sum(sub_contour[0]) >0 and np.sum(sub_contour[len(sub_contour)-1] > 0)): #checking that it connects top and bottom
-                candidates.append(i)
+            if (np.sum(sub_contour[0]) >0 and np.sum(sub_contour[len(sub_contour)-1] > 0)): #checking that it connects top and bottom$
+                if (get_migration_index(sub_contour)<5):
+                    candidates.append(i)
+                
         print("Flood fill")
 
         if (len(candidates) > 0):
@@ -42,9 +45,10 @@ def make_contour_mask(img):
         
         dilated = binary_dilation(dilated)
 
-    tentative_contour = lab==candidates[0]        
-    fill = flood_fill(tentative_contour,(int(len(img)/2),int(len(img[0])/2)),1,connectivity=1)
-
+    tentative_contour = lab==candidates[0]      
+    tentative_contour = np.array(tentative_contour,dtype=int)
+    fill = flood_fill(tentative_contour,(int(len(img)/2),int(len(img[0])/2)),2,connectivity=1)
+    fill = fill==2
         
 
     print("Cleaning")
