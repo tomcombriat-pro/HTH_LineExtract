@@ -61,9 +61,10 @@ for i in range(len(ls)):
 
         res_output.write("#### File: "+ls[i]+"\n")
         res_output.write("## Channel: "+str(j)+"\n")
-        res_output.write("## Dimension: "+str(img.shape))
+        res_output.write("## Dimension: "+str(img.shape)+"\n")
 
-        if (np.mean(img[:,0:int(len(img[0])/2)]) > (np.mean(img[:,int(len(img[0])/2)::]))):
+        print(np.mean(img[j][:,0:int(len(img[j][0])/2)]),np.mean(img[j][:,int(len(img[j][0])/2)::]))
+        if (np.mean(img[j][:,0:int(len(img[j][0])/2)]) > np.mean(img[j][:,int(len(img[j][0])/2)::])):
             res_output.write("## Cells on the left\n")
         else:
             res_output.write("## Cells on the right\n")
@@ -75,7 +76,8 @@ for i in range(len(ls)):
 
         
         plt.imshow(img[j],cmap="gist_gray")
-        plt.imshow(contour,cmap="inferno",alpha=.7)
+        #plt.imshow(contour,cmap="inferno",alpha=.7)
+        plt.contour(contour,colors="white",levels=[.5],linewidths=.5)
         plt.savefig(folder+"results"+os.sep+ls[i]+".png")
         plt.clf()
 
