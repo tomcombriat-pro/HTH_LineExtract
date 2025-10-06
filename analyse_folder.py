@@ -57,14 +57,17 @@ for i in range(len(ls)):
     for j in range(len(img)): ## loop on channels
 
         contour,fill = make_contour_mask(img[j])
+        if (np.sum(contour)==0):
+            res_output.write("#### File: "+ls[i]+" SKIPPED\n")
+            break
         migration_index = get_migration_index(contour)
 
         res_output.write("#### File: "+ls[i]+"\n")
         res_output.write("## Channel: "+str(j)+"\n")
         res_output.write("## Dimension: "+str(img.shape)+"\n")
 
-        print(np.mean(img[j][:,0:int(len(img[j][0])/2)]),np.mean(img[j][:,int(len(img[j][0])/2)::]))
-        if (np.mean(img[j][:,0:int(len(img[j][0])/2)]) > np.mean(img[j][:,int(len(img[j][0])/2)::])):
+
+        if (np.mean(img[j][:,0:int(len(img[j][0])/2)]) > (np.mean(img[j][:,int(len(img[j][0])/2)::]))):
             res_output.write("## Cells on the left\n")
         else:
             res_output.write("## Cells on the right\n")
@@ -78,7 +81,7 @@ for i in range(len(ls)):
         plt.imshow(img[j],cmap="gist_gray")
         #plt.imshow(contour,cmap="inferno",alpha=.7)
         plt.contour(contour,colors="white",levels=[.5],linewidths=.5)
-        plt.savefig(folder+"results"+os.sep+ls[i]+".png")
+        plt.savefig(folder+"results"+os.sep+ls[i]+"_ch"+str(j)+".png")
         plt.clf()
 
         
