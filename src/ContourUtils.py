@@ -13,10 +13,13 @@ from skimage.segmentation import flood_fill
 
 
 
-def make_contour_mask(img):
+def make_contour_mask(img, threshold_type="li"):
     """ Expects a MIP fluo img"""
 
-    thresholded = img>threshold_li(img)
+    if (threshold_type == "li"):
+        thresholded = img>threshold_li(img)
+    elif (threshold_type =="otsu"):
+        thresholded = img>threshold_otsu(img)
     dilated = thresholded.copy()
     
     connected_contour_flag = False
@@ -37,6 +40,7 @@ def make_contour_mask(img):
             if (np.sum(sub_contour[0]) >0 and np.sum(sub_contour[len(sub_contour)-1] > 0)): #checking that it connects top and bottom$
                 if (get_migration_index(sub_contour)<5):
                     candidates.append(i)
+                    break
                 
         print("Flood fill")
 
@@ -47,8 +51,10 @@ def make_contour_mask(img):
         N_it +=1
 
         if (N_it==50):
+            print("/!\ Aborted")
             return np.zeros_like(img),np.zeros_like(img)
 
+    print("Successful after", N_it, " iterations")
     tentative_contour = lab==candidates[0]      
     tentative_contour = np.array(tentative_contour,dtype=int)
     fill = flood_fill(tentative_contour,(int(len(img)/2),int(len(img[0])/2)),2,connectivity=1)
@@ -68,7 +74,9 @@ def get_contour_end_points(contour):
 
 
 def get_migration_index(contour):
+    #print("Computing MI")
     top,bottom = get_contour_end_points(contour)
+    #print(top, bottom)
     delta_y_squared = len(contour)**2
     base_distance = np.sqrt((top - bottom)**2 + delta_y_squared)
     

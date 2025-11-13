@@ -55,34 +55,41 @@ for i in range(len(ls)):
 
     print(img.shape)
     for j in range(len(img)): ## loop on channels
-
+        successful = True
         contour,fill = make_contour_mask(img[j])
         if (np.sum(contour)==0):
-            res_output.write("#### File: "+ls[i]+" SKIPPED\n")
-            break
-        migration_index = get_migration_index(contour)
+            ## Second attempt
+            print("Switching to OTSU")
+            contour,fill = make_contour_mask(img[j], "otsu")
+            
+            if (np.sum(contour)==0):
+                res_output.write("#### File: "+ls[i]+" Channel: "+str(j)+" SKIPPED\n")
+                successful = False
+            #break
+        if (successful):
+            migration_index = get_migration_index(contour)
 
-        res_output.write("#### File: "+ls[i]+"\n")
-        res_output.write("## Channel: "+str(j)+"\n")
-        res_output.write("## Dimension: "+str(img.shape)+"\n")
+            res_output.write("#### File: "+ls[i]+"\n")
+            res_output.write("## Channel: "+str(j)+"\n")
+            res_output.write("## Dimension: "+str(img.shape)+"\n")
 
 
-        if (np.mean(img[j][:,0:int(len(img[j][0])/2)]) > (np.mean(img[j][:,int(len(img[j][0])/2)::]))):
-            res_output.write("## Cells on the left\n")
-        else:
-            res_output.write("## Cells on the right\n")
-        
-        res_output.write("## Contour_length Shortest_line_length Ratio\n")
-        base_distance, contour_length = get_contour_distances(contour)
-        res_output.write("%f %f %f\n" % (contour_length,base_distance,contour_length/base_distance))
-        res_output.write("\n\n")
+            if (np.mean(img[j][:,0:int(len(img[j][0])/2)]) > (np.mean(img[j][:,int(len(img[j][0])/2)::]))):
+                res_output.write("## Cells on the left\n")
+            else:
+                res_output.write("## Cells on the right\n")
 
-        
-        plt.imshow(img[j],cmap="gist_gray")
-        #plt.imshow(contour,cmap="inferno",alpha=.7)
-        plt.contour(contour,colors="white",levels=[.5],linewidths=.5)
-        plt.savefig(folder+"results"+os.sep+ls[i]+"_ch"+str(j)+".png")
-        plt.clf()
+            res_output.write("## Contour_length Shortest_line_length Ratio\n")
+            base_distance, contour_length = get_contour_distances(contour)
+            res_output.write("%f %f %f\n" % (contour_length,base_distance,contour_length/base_distance))
+            res_output.write("\n\n")
+
+
+            plt.imshow(img[j],cmap="gist_gray")
+            #plt.imshow(contour,cmap="inferno",alpha=.7)
+            plt.contour(contour,colors="white",levels=[.5],linewidths=.5)
+            plt.savefig(folder+"results"+os.sep+ls[i]+"_ch"+str(j)+".png")
+            plt.clf()
 
         
             
