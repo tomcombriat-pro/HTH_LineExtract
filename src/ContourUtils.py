@@ -16,6 +16,14 @@ from skimage.segmentation import flood_fill
 def make_contour_mask(img, threshold_type="li"):
     """ Expects a MIP fluo img"""
 
+    ## Determining if cells are on the left of right
+    if (np.mean(img[:][0,len(img[0])//2]) > np.mean(img[:][len(img[0])//2::])):
+        left = True
+        print("Left")
+    else:
+        left=False
+        print("Right")
+
     if (threshold_type == "li"):
         thresholded = img>threshold_li(img)
     elif (threshold_type =="otsu"):
@@ -25,6 +33,7 @@ def make_contour_mask(img, threshold_type="li"):
     connected_contour_flag = False
     N_it = 0
     while not (connected_contour_flag):
+        N_it +=1
         
         contour = np.bitwise_xor(binary_dilation(dilated), dilated)
 
@@ -40,6 +49,7 @@ def make_contour_mask(img, threshold_type="li"):
             if (np.sum(sub_contour[0]) >0 and np.sum(sub_contour[len(sub_contour)-1] > 0)): #checking that it connects top and bottom$
                 if (get_migration_index(sub_contour)<5):
                     candidates.append(i)
+                    print("CANDIDATE")
                     break
                 
         print("Flood fill")
@@ -48,7 +58,7 @@ def make_contour_mask(img, threshold_type="li"):
             connected_contour_flag = True
         
         dilated = binary_dilation(dilated)
-        N_it +=1
+        
 
         if (N_it==50):
             print("/!\ Aborted")
@@ -57,7 +67,15 @@ def make_contour_mask(img, threshold_type="li"):
     print("Successful after", N_it, " iterations")
     tentative_contour = lab==candidates[0]      
     tentative_contour = np.array(tentative_contour,dtype=int)
-    fill = flood_fill(tentative_contour,(int(len(img)/2),int(len(img[0])/2)),2,connectivity=1)
+
+    ## Start flood filling from the opposite direction
+    if not (left):
+        fill = flood_fill(tentative_contour,(int(len(img)/2),0),2,connectivity=1)
+    else:
+        fill = flood_fill(tentative_contour,(int(len(img)/2),len(img[0])-1),2,connectivity=1)
+
+    
+    #fill = flood_fill(tentative_contour,(int(len(img)/2),int(len(img[0])/2)),2,connectivity=1)
     fill = fill==2
         
 
