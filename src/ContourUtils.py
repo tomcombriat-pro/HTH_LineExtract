@@ -48,9 +48,12 @@ def make_contour_mask(img, threshold_type="li"):
             
             if (np.sum(sub_contour[0]) >0 and np.sum(sub_contour[len(sub_contour)-1] > 0)): #checking that it connects top and bottom$
                 if (get_migration_index(sub_contour)<5):
-                    candidates.append(i)
-                    print("CANDIDATE")
-                    break
+                    y_mean_pos = np.mean(np.where(sub_contour)[1]) ## Y mean pos, checking that it is close to the edge
+                    if (left and y_mean_pos < len(img[0])//2) or (not left and y_mean_pos > len(img[0])//2):
+                        print(y_mean_pos, len(img[0])//2, left)
+                        candidates.append(i)
+                        print("CANDIDATE")
+                    #break
                 
         print("Flood fill")
 
@@ -65,8 +68,22 @@ def make_contour_mask(img, threshold_type="li"):
             return np.zeros_like(img),np.zeros_like(img)
 
     print("Successful after", N_it, " iterations")
-    tentative_contour = lab==candidates[0]      
+    
+    y_mean_contours = []
+    ## Chosing the contour which is the left/right most
+    for i in range(len(candidates)):
+        tamp_where = np.where(lab==candidates[i])[1]
+        y_mean_contours.append(np.mean(tamp_where))
+
+    if (left):
+        tentative_contour = lab==candidates[np.argmin(y_mean_contours)]
+    else:
+        tentative_contour = lab==candidates[np.argmax(y_mean_contours)]
     tentative_contour = np.array(tentative_contour,dtype=int)
+
+    max_y_arg = np.argmax(tentative_contour==1)
+    print(max_y_arg)
+    print()
 
     ## Start flood filling from the opposite direction
     if not (left):
