@@ -17,7 +17,7 @@ def make_contour_mask(img, threshold_type="li"):
     """ Expects a MIP fluo img"""
 
     ## Determining if cells are on the left of right
-    if (np.mean(img[:,0,len(img[0])//2]) > np.mean(img[:,len(img[0])//2::])):
+    if (np.mean(img[:,0:len(img[0])//2]) > np.mean(img[:,len(img[0])//2::])):
         left = True
         print("Left")
     else:
