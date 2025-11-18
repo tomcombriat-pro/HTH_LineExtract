@@ -42,6 +42,7 @@ except:
 
 
 res_output=open(folder+"results"+os.sep+"res.txt","w")
+log_output=open(folder+"results"+os.sep+"log.txt","w")
 fig = plt.figure(figsize=(30,30))
 
 for i in range(len(ls)):
@@ -90,9 +91,12 @@ for i in range(len(ls)):
             plt.contour(contour,colors="white",levels=[.5],linewidths=.5)
             plt.savefig(folder+"results"+os.sep+ls[i]+"_ch"+str(j)+".png")
             plt.clf()
+        else:
+            log_output.write("File: "+ls[i]+"  CHAN: " + str(j)+" was not successfully analysed\n")
 
         
             
                                                     
 res_output.close()
+log_output.close()
         
