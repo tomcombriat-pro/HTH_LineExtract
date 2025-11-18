@@ -16,6 +16,8 @@ from skimage.segmentation import flood_fill
 def make_contour_mask(img, threshold_type="li"):
     """ Expects a MIP fluo img"""
 
+
+    
     ## Determining if cells are on the left of right
     if (np.mean(img[:,0:len(img[0])//2]) > np.mean(img[:,len(img[0])//2::])):
         left = True
@@ -52,15 +54,14 @@ def make_contour_mask(img, threshold_type="li"):
                     if (left and y_mean_pos < len(img[0])//2) or (not left and y_mean_pos > len(img[0])//2):
                         print(y_mean_pos, len(img[0])//2, left)
                         candidates.append(i)
-                        print("CANDIDATE")
                     #break
                 
-        print("Flood fill")
 
         if (len(candidates) > 0):
             connected_contour_flag = True
         
         dilated = binary_dilation(dilated)
+        #dilated = binary_erosion(dilated)
         
 
         if (N_it==50):
