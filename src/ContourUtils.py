@@ -30,6 +30,8 @@ def make_contour_mask(img, threshold_type="li"):
         thresholded = img>threshold_li(img)
     elif (threshold_type =="otsu"):
         thresholded = img>threshold_otsu(img)
+    else:
+        thresholded = threshold_type
     dilated = thresholded.copy()
     
     connected_contour_flag = False

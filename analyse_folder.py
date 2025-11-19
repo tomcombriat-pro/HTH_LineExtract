@@ -19,6 +19,8 @@ from skimage.morphology import binary_dilation, binary_erosion
 from skimage.measure import label, regionprops
 from skimage.segmentation import flood_fill
 from src.ContourUtils import *
+from src.Segmenter import *
+import pickle
 
 
 
@@ -41,6 +43,12 @@ except:
     pass
 
 
+
+model_file = open("models/202511_cB.pic","rb")
+mySegmenter = pickle.load(model_file)
+model_file.close()
+
+
 res_output=open(folder+"results"+os.sep+"res.txt","w")
 log_output=open(folder+"results"+os.sep+"log.txt","w")
 fig = plt.figure(figsize=(30,30))
@@ -58,14 +66,21 @@ for i in range(len(ls)):
     for j in range(len(img)): ## loop on channels
         successful = True
         contour,fill = make_contour_mask(img[j])
+        method = "li"
         if (np.sum(contour)==0):
             ## Second attempt
             print("Switching to OTSU")
             contour,fill = make_contour_mask(img[j], "otsu")
+            method = "otsu"
             
             if (np.sum(contour)==0):
-                res_output.write("#### File: "+ls[i]+" Channel: "+str(j)+" SKIPPED\n")
-                successful = False
+                print("Switching to ML")
+                contour,fill = make_contour_mask(img[j], mySegmenter.segment(img[j]))
+                method="ml"
+                
+                if (np.sum(contour)==0):
+                    res_output.write("#### File: "+ls[i]+" Channel: "+str(j)+" SKIPPED\n")
+                    successful = False
             #break
         if (successful):
             migration_index = get_migration_index(contour)
@@ -73,6 +88,7 @@ for i in range(len(ls)):
             res_output.write("#### File: "+ls[i]+"\n")
             res_output.write("## Channel: "+str(j)+"\n")
             res_output.write("## Dimension: "+str(img.shape)+"\n")
+            res_output.write("## Method: "+method+"\n")
 
 
             if (np.mean(img[j][:,0:int(len(img[j][0])/2)]) > (np.mean(img[j][:,int(len(img[j][0])/2)::]))):
