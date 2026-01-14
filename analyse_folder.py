@@ -21,9 +21,12 @@ from skimage.segmentation import flood_fill
 from src.ContourUtils import *
 from src.Segmenter import *
 import pickle
+from skimage.transform import rotate
 
 
 
+
+rotatee = False
 
 folder = sys.argv[1]
 if (folder[-1] != os.sep):
@@ -41,6 +44,12 @@ try:
     os.mkdir(folder+"results")
 except:
     pass
+
+if (len(sys.argv)>2):
+    for i in range(2,len(sys.argv)):
+        if (sys.argv[i]=="--rotate"):
+            print("* Images will be rotated")
+            rotatee=True
 
 
 
@@ -60,8 +69,10 @@ for i in range(len(ls)):
     img = np.amax(img,axis=0) # MIP
     if (img.ndim == 2):
         img = np.array([img])
-        
-
+    print(img.shape)   
+    if (rotatee):
+        for j in range(len(img)):
+            img[j] = rotate(img[j],90,preserve_range=True, resize=True)
     print(img.shape)
     for j in range(len(img)): ## loop on channels
         successful = True
