@@ -32,7 +32,7 @@ if (folder[-1] != os.sep):
 ls = os.listdir(folder)
 ls_filtered = []
 for i in ls:
-    if (".nd2" in i and not "BF" in i):
+    if (".nd2" in i and not "BF" in i and not ".tiff" in i):
         ls_filtered.append(i)
 
 ls = ls_filtered
@@ -70,12 +70,12 @@ for i in range(len(ls)):
         if (np.sum(contour)==0):
             ## Second attempt
             print("Switching to OTSU")
-            contour,fill = make_contour_mask(img[j], "otsu")
+            contour,fill = make_contour_mask(img[j], threshold_type="otsu")
             method = "otsu"
             
             if (np.sum(contour)==0):
                 print("Switching to ML")
-                contour,fill = make_contour_mask(img[j], mySegmenter.segment(img[j]))
+                contour,fill = make_contour_mask(img[j],threshold_type="manual",mask= mySegmenter.segment(img[j]))
                 method="ml"
                 
                 if (np.sum(contour)==0):
