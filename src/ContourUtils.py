@@ -13,7 +13,7 @@ from skimage.segmentation import flood_fill
 
 
 
-def make_contour_mask(img, threshold_type="li"):
+def make_contour_mask(img, threshold_type="li", mask=[]):
     """ Expects a MIP fluo img"""
 
 
@@ -31,7 +31,7 @@ def make_contour_mask(img, threshold_type="li"):
     elif (threshold_type =="otsu"):
         thresholded = img>threshold_otsu(img)
     else:
-        thresholded = threshold_type
+        thresholded = mask
     dilated = thresholded.copy()
     
     connected_contour_flag = False
