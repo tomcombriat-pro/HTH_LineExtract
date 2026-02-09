@@ -70,8 +70,9 @@ for i in range(len(ls)):
     print("* Analysing:",ls[i])
 
     img = nd2.imread(folder+ls[i])
-    img = np.amax(img,axis=0) # MIP
-    if (img.ndim == 2):
+    if not (img.ndim == 2): # it is not already a MIP
+        img = np.amax(img,axis=0) # MIP
+    if (img.ndim == 2): # only one channel
         img = np.array([img])
     print(img.shape)   
     if (rotatee):
