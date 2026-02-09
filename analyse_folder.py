@@ -32,11 +32,15 @@ folder = sys.argv[1]
 if (folder[-1] != os.sep):
     folder+=os.sep
 
+log_output=open(folder+"results"+os.sep+"log.txt","w")
+
 ls = os.listdir(folder)
 ls_filtered = []
 for i in ls:
     if (".nd2" in i and not "BF" in i and not ".tiff" in i):
         ls_filtered.append(i)
+    else:
+        log_output.write("# File: " + i + " will not be analysed\n")
 
 ls = ls_filtered
 
@@ -59,7 +63,7 @@ model_file.close()
 
 
 res_output=open(folder+"results"+os.sep+"res.txt","w")
-log_output=open(folder+"results"+os.sep+"log.txt","w")
+
 fig = plt.figure(figsize=(30,30))
 
 for i in range(len(ls)):
@@ -120,6 +124,9 @@ for i in range(len(ls)):
             plt.clf()
         else:
             log_output.write("File: "+ls[i]+"  CHAN: " + str(j)+" was not successfully analysed\n")
+            plt.imshow(img[j],cmap="gist_gray")
+            plt.savefig(folder+"results"+os.sep+ls[i]+"_ch"+str(j)+"_FAILED.png")
+            plt.clf()
 
         
             
