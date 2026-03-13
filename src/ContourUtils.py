@@ -67,7 +67,7 @@ def make_contour_mask(img, threshold_type="li", mask=[]):
         
 
         if (N_it==50):
-            print("/!\ Aborted")
+            print("/!\\ Aborted")
             return np.zeros_like(img),np.zeros_like(img)
 
     print("Successful after", N_it, " iterations")
